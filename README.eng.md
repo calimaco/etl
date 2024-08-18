@@ -1,20 +1,20 @@
-# ⚙️ ETL-FFLCH
+# ETL-FFLCH
 
 [![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](https://github.com/fflch/etl/blob/master/README.md)
 
-## 🗒️ Description
+## Description
 
 ETL-FFLCH is a solution designed to streamline the management of Replicado USP data by transforming it into an accessible and user-friendly resource. It (efficiently, hopefully) extracts, transforms, and loads essential data from FFLCH into a simplified and redundant database. Originally designed to improve usability and minimize errors associated with the complexity of Replicado USP, ETL-FFLCH streamlined data is now available through FFLCH API, making our faculty's data easily accessible and integrable for anyone.
 
 
-#### 🌟 Core Benefits
+#### Key Features
 
 - **Streamlined**: Converts complex and scattered data from Replicado USP into a more accessible, consistent format.
 
 - **Flexible transformations**: ETL-FFLCH allows for customizable manipulation of Replicado USP data, making it easier to format, adapt and enhance data to address gaps and improve consistency, ensuring it better meets the needs of our faculty.
 
 
-#### 🚧 Limitations
+#### Limitations
 
  - **Redundancy**: The simplified database contains redundant data, which, while making the database easier to use, is not ideal for all purposes.
 
@@ -22,11 +22,9 @@ ETL-FFLCH is a solution designed to streamline the management of Replicado USP d
  
  - **Full reload**: Since the Replicado USP database lacks `updated_at` timestamps, incremental data changes cannot be easily identified. As a result, the most practical approach to account for any updates is to refresh the entire dataset. This means that almost every piece of data is dropped and fully reloaded each time the ETL process runs. (Table *lattes* is the solo exception.)
 
- For detailed setup instructions, please refer to [Deployment Instructions](#-deployment-instructions).
+ 
+ -----
 
-<br>
-
-## 🗃️ Data Organization Overview
 
  For organizational purposes, we have categorized the data into nine distinct groups. These categories often serve as the basis for how data is divided in folders within our code. The categories are:
 
@@ -40,9 +38,11 @@ ETL-FFLCH is a solution designed to streamline the management of Replicado USP d
 - `Lattes`: Information from the Lattes Curriculum, a Brazilian academic curriculum platform.
 - `Socioeconomic Questionnaire`: Data from undergraduates socioeconomic questionnaires.
 
-<br>
 
-## 🔧 Deployment Instructions
+For detailed setup instructions, please refer to [Deployment Instructions](#deployment-instructions).
+
+
+## Deployment Instructions
 
 **1.** First, have all the project's dependencies installed:
 
@@ -84,9 +84,8 @@ php check.php
 php drop.php
 ```
 
-<br>
 
-## 🧩 Basic Code Structure
+## Basic Code Structure
 
 - `config/`: Manages local database connections and initializes .env settings.
 - `src/`: Contains the project's source code.
