@@ -8,7 +8,7 @@ use Error;
 
 class CommonUtils
 {
-    public static function pepperedSha256Hash(string $valueToHash, int $size = null)
+    public static function pepperedSha256Hash(string $valueToHash, ?int $size = null)
     {
         $pepperedValue = $valueToHash . $_ENV['ETL_HASH_PEPPER'];
         $hash = strtoupper(hash('sha256', $pepperedValue));
@@ -21,7 +21,7 @@ class CommonUtils
         return substr($hash, 0, $size);
     }
 
-    public static function plainMd5Hash(string $valueToHash, int $size = null)
+    public static function plainMd5Hash(string $valueToHash, ?int $size = null)
     {
         $hash = strtoupper(md5($valueToHash));
 

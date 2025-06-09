@@ -28,7 +28,7 @@ foreach ($representativeTables as $group => $table) {
         WHERE database_name = '{$db}'
             AND table_name = '{$table}'
             AND n_rows > 0"
-    )->last_update_utc ?? null;
+    )[0]->last_update_utc ?? null;
 
     $timeDiff = CommonUtils::getTimeDiffSinceLastUpdate($lastUpdate);
     $lastUpdates[$group] = $timeDiff;

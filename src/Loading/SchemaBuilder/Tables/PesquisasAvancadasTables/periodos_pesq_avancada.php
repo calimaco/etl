@@ -30,7 +30,7 @@ return [
             "size" => 32
         ],
         "horas_semanais" => [
-            "type" => "tinyInteger",
+            "type" => "smallInteger",
             "nullable" => true
         ]
     ],
@@ -38,7 +38,7 @@ return [
     "primary" => [
         "key" => ["id_projeto", "sequencia_periodo"]
     ],
-    
+
     "foreign" => [
         [
             "keys" => "id_projeto",

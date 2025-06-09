@@ -76,11 +76,11 @@ class BuilderUtils
     public static function validateCurrentDatabaseStructure(bool $isTryingToLoad)
     {
         $expectedUserTablesColumns = self::getExpectedTablesColumns();
-        $actualUserTables = Capsule::schema()->getAllTables();
+        $actualUserTables = Capsule::schema()->getTables();
         $missingColumnFound = false;
 
         foreach ($expectedUserTablesColumns as $table => $columns) {
-            if(!Capsule::schema()->hasColumns($table, $columns)) {
+            if (!Capsule::schema()->hasColumns($table, $columns)) {
                 $missingColumnFound = true;
             };
         }
@@ -88,11 +88,9 @@ class BuilderUtils
         if ($isTryingToLoad) {
             if (empty($actualUserTables)) {
                 die(MessageUtils::ERROR_EMPTY_DB);
-            }
-            elseif ($missingColumnFound) {
+            } elseif ($missingColumnFound) {
                 die(MessageUtils::ERROR_TABLE_ISSUE);
-            }
-            else {
+            } else {
                 return;
             }
         }
@@ -107,8 +105,7 @@ class BuilderUtils
 
         if ($forceRebuild === true) {
             $requestingRebuild = true;
-        }
-        elseif ($missingColumnFound === false) {
+        } elseif ($missingColumnFound === false) {
             $requestingRebuild = self::offerRebuild();
         }
 
@@ -141,7 +138,7 @@ class BuilderUtils
 
     private static function buildDecision(bool $missingColumnFound, bool $requestingRebuild)
     {
-        if (empty(Capsule::schema()->getAllTables())) {
+        if (empty(Capsule::schema()->getTables())) {
             return 'first build';
         } elseif ($missingColumnFound) {
             return 'necessary rebuild';
@@ -188,7 +185,7 @@ class BuilderUtils
         $expectedUserTablesColumns = [];
         $allTablesInfo = self::getAllETLTablesInfo();
 
-        foreach($allTablesInfo as $tableInfo) {
+        foreach ($allTablesInfo as $tableInfo) {
             $tableName = $tableInfo["tableName"];
             $tableColumns = array_keys($tableInfo["columns"]);
             // hotfix

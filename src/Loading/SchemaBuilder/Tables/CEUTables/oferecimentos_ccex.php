@@ -49,7 +49,7 @@ return [
             "nullable" => true
         ],
         "valor_previsto_custos" => [
-            "type" => "smallInteger",
+            "type" => "decimal",
             "nullable" => true
         ],
         "valor_previsto_prce" => [
@@ -65,10 +65,12 @@ return [
             "size" => 256
         ],
         "data_inicio_inscricoes" => [
-            "type" => "date"
+            "type" => "date",
+            "nullable" => true
         ],
         "data_fim_inscricoes" => [
-            "type" => "date"
+            "type" => "date",
+            "nullable" => true
         ],
         "permite_inscricao_online" => [
             "type" => "char",
@@ -80,7 +82,7 @@ return [
     "primary" => [
         "key" => ["codigo_oferecimento"]
     ],
-    
+
     "foreign" => [
         [
             "keys" => "codigo_curso_ceu",

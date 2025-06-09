@@ -47,7 +47,7 @@ return [
         ],
         "nome_rede_intercambio" => [
             "type" => "string",
-            "size" => 64,
+            "size" => 256,
             "nullable" => true
         ],
         "responsavel_numero_usp" => [
@@ -72,7 +72,7 @@ return [
     "primary" => [
         //
     ],
-    
+
     "foreign" => [
         //
     ]
