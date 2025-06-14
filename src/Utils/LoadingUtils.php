@@ -8,24 +8,24 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 class LoadingUtils
 {
+
     public static function insertIntoTable(string $queryType, object $object, string $model)
     {
         $insertLimit = self::getInsertLimit($model);
 
         try {
             self::transformAndInsert($queryType, $object, $model, $insertLimit);
-        }
-        catch (\Exception $e) {
-            echo MessageUtils::eol(3);
+        } catch (\Exception $e) {
+            ConsoleOutput::echoNewlines(3);
 
             CommonUtils::printTruncatedError($e->getMessage());
 
             if (str_contains($e->getMessage(), "too many placeholders")) {
-                echo MessageUtils::eol(2);
-                echo MessageUtils::ERROR_TABLE_ISSUE;
+                ConsoleOutput::echoNewlines(2);
+                ConsoleOutput::printMessage('error_table_issue');
             }
 
-            echo MessageUtils::eol(3);
+            ConsoleOutput::echoNewlines(3);
             die();
         }
     }
@@ -35,19 +35,17 @@ class LoadingUtils
         if ($queryType == "full") {
             $data = $object->transformData();
             self::chunkInsert($data, $insertLimit, $model);
-        }
-        elseif ($queryType == "paginated") {
+        } elseif ($queryType == "paginated") {
             $pagination = ['limit' => ($insertLimit * 5), 'offset' => 0];
             do {
                 $data = $object->transformData($pagination);
                 self::chunkInsert($data, $insertLimit, $model);
                 $pagination['offset'] += $pagination['limit'];
             } while (!empty($data));
-        }
-        else {
+        } else {
             throw new \Exception(
                 "Invalid value for \$queryType argument. " .
-                "Expected 'full' or 'paginated'."
+                    "Expected 'full' or 'paginated'."
             );
             die();
         }
@@ -55,7 +53,7 @@ class LoadingUtils
 
     private static function chunkInsert($data, $insertLimit, $model)
     {
-        foreach(array_chunk($data, $insertLimit) as $chunk) {
+        foreach (array_chunk($data, $insertLimit) as $chunk) {
             $model::insert($chunk);
         }
     }

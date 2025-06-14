@@ -10,7 +10,7 @@ class ReplicadoModelsUtils
             $data['versao_disciplina'] .
             $data['codigo_turma'];
 
-        return CommonUtils::plainMd5Hash($singleTurmaString);
+        return HashUtility::md5($singleTurmaString);
     }
 
     public static function getEstagioPaeId($data)
@@ -19,7 +19,7 @@ class ReplicadoModelsUtils
             $data['data_inicio_pae'] . '-' .
             $data['modalidade_pae'] . '-';
 
-        return CommonUtils::pepperedSha256Hash($singlePaeString, 32);
+        return HashUtility::sha256WithEnvPepper($singlePaeString, 32);
     }
 
     public static function getDisciplinaPosGraduacaoId($data)
@@ -27,7 +27,7 @@ class ReplicadoModelsUtils
         $singleDisciplinaString = $data['codigo_disciplina'] .
             $data['versao_disciplina'];
 
-        return CommonUtils::plainMd5Hash($singleDisciplinaString, 8);
+        return HashUtility::md5($singleDisciplinaString, 8);
     }
 
     public static function getCredenciamentoId($data)
@@ -36,7 +36,7 @@ class ReplicadoModelsUtils
             $data['codigo_area'] .
             $data['data_inicio_validade'];
 
-        return CommonUtils::pepperedSha256Hash($singleCredenciamentoString, 32);
+        return HashUtility::sha256WithEnvPepper($singleCredenciamentoString, 32);
     }
 
     public static function getPosGraduacaoId($data)
@@ -45,7 +45,7 @@ class ReplicadoModelsUtils
             $data['seq_programa'] .
             $data['codigo_area'];
 
-        return CommonUtils::pepperedSha256Hash($singlePosGraduacaoString, 32);
+        return HashUtility::sha256WithEnvPepper($singlePosGraduacaoString, 32);
     }
 
     public static function getBolsaPosGraduacaoId($data)
@@ -54,7 +54,7 @@ class ReplicadoModelsUtils
             $data['codigo_programa_fomento'] . "." .
             $data['codigo_bolsa_fomento'];
 
-        return CommonUtils::plainMd5Hash($singleBolsaString, 12);
+        return HashUtility::md5($singleBolsaString, 12);
     }
 
     public static function getParticipacaoBancaId($data)
@@ -66,7 +66,7 @@ class ReplicadoModelsUtils
             $data['codigo_area'] .
             $data['sequencia_participacao'];
 
-        return CommonUtils::pepperedSha256Hash($singleParticipacaoString, 32);
+        return HashUtility::sha256WithEnvPepper($singleParticipacaoString, 32);
     }
 
     public static function getDefesaId($data)
@@ -77,7 +77,7 @@ class ReplicadoModelsUtils
             $data['seq_programa'] .
             $data['codigo_area'];
 
-        return CommonUtils::pepperedSha256Hash($singleDefesaString, 32);
+        return HashUtility::sha256WithEnvPepper($singleDefesaString, 32);
     }
 
     public static function getSiicuspTrabalhoId($data)
@@ -91,7 +91,7 @@ class ReplicadoModelsUtils
             $data['codigo_disciplina'] .
             $data['versao_disciplina'];
 
-        return CommonUtils::plainMd5Hash($singleDisciplinaString, 8);
+        return HashUtility::md5($singleDisciplinaString, 8);
     }
 
     public static function getTurmaGraduacaoId($data)
@@ -101,7 +101,7 @@ class ReplicadoModelsUtils
             $data['versao_disciplina'] .
             $data['codigo_turma'];
 
-        return CommonUtils::plainMd5Hash($singleTurmaString);
+        return HashUtility::md5($singleTurmaString);
     }
 
     public static function getICId($data)
@@ -116,7 +116,7 @@ class ReplicadoModelsUtils
             $data['codigo_edicao_curso'] .
             $data['sequencia_oferecimento'];
 
-        return CommonUtils::plainMd5Hash($singleOferecimentoString);
+        return HashUtility::md5($singleOferecimentoString);
     }
 
     public static function getPesquisaAvancadaId($data)
@@ -133,7 +133,7 @@ class ReplicadoModelsUtils
             $data['numero_usp'] .
             $data['data_inicio_auxilio'];
 
-        return CommonUtils::pepperedSha256Hash($singleAuxilioIdString, 32);
+        return HashUtility::sha256WithEnvPepper($singleAuxilioIdString, 32);
     }
 
     public static function getBolsaDiversaId($data)
@@ -145,7 +145,7 @@ class ReplicadoModelsUtils
             $data['numero_usp'] .
             $data['data_inicio_bolsa'];
 
-        return CommonUtils::pepperedSha256Hash($singleBolsaDiversaIdString, 32);
+        return HashUtility::sha256WithEnvPepper($singleBolsaDiversaIdString, 32);
     }
 
     public static function getInscricaoProjetoDivId($data)
@@ -157,7 +157,7 @@ class ReplicadoModelsUtils
             $data['codigo_projeto_diverso'] .
             $data['numero_usp'];
 
-        return CommonUtils::pepperedSha256Hash($singleInscricaoProjetoDivIdString, 32);
+        return HashUtility::sha256WithEnvPepper($singleInscricaoProjetoDivIdString, 32);
     }
 
     public static function getProjetoDiversoId($data)
@@ -168,7 +168,7 @@ class ReplicadoModelsUtils
             $data['periodo_referencial'] .
             $data['codigo_projeto_diverso'];
 
-        return CommonUtils::plainMd5Hash($singleProjetoDiversoIdString, 12);
+        return HashUtility::md5($singleProjetoDiversoIdString, 12);
     }
 
     public static function getGraduacaoId($data)
@@ -177,7 +177,7 @@ class ReplicadoModelsUtils
             $data['numero_usp'] .
             $data['sequencia_grad'];
 
-        return CommonUtils::pepperedSha256Hash(
+        return HashUtility::sha256WithEnvPepper(
             $singleGraduacaoIdString,
             32
         );
@@ -196,6 +196,6 @@ class ReplicadoModelsUtils
             $data['sequencia_vinculo'] .
             $data['vinculo'];
 
-        return CommonUtils::pepperedSha256Hash($singleVinculoIdString, 32);
+        return HashUtility::sha256WithEnvPepper($singleVinculoIdString, 32);
     }
 }

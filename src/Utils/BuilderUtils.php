@@ -26,12 +26,12 @@ class BuilderUtils
     }
 
     public static function getTablesNamesFromTableGroups(
-        array $groups,
+        array $group,
         bool $sortedByDependencies = false
     ) {
         $tablesNames = [];
 
-        $tablesProperties = self::getTablesInfoFromTableGroups($groups, $sortedByDependencies);
+        $tablesProperties = self::getTablesInfoFromTableGroups($group, $sortedByDependencies);
 
         foreach ($tablesProperties as $tableProperties) {
             $tablesNames[] = $tableProperties['tableName'];
@@ -87,9 +87,9 @@ class BuilderUtils
 
         if ($isTryingToLoad) {
             if (empty($actualUserTables)) {
-                die(MessageUtils::ERROR_EMPTY_DB);
+                die(ConsoleOutput::printMessage('error_empty_db'));
             } elseif ($missingColumnFound) {
-                die(MessageUtils::ERROR_TABLE_ISSUE);
+                die(ConsoleOutput::printMessage('error_table_issue'));
             } else {
                 return;
             }
@@ -120,7 +120,7 @@ class BuilderUtils
 
     private static function offerRebuild()
     {
-        echo MessageUtils::OFFER_REBUILD_MSG;
+        ConsoleOutput::printMessage('offer_rebuild_msg');
 
         $response = strtoupper(trim(fgets(STDIN)));
 
@@ -128,9 +128,10 @@ class BuilderUtils
             if ($response === 'Y') {
                 return true;
             } elseif ($response === 'N') {
+                ConsoleOutput::printMessage('exiting_script');
                 return false;
             } else {
-                echo MessageUtils::EITHER_YES_NO;
+                ConsoleOutput::printMessage('either_yes_no');
                 $response = strtoupper(trim(fgets(STDIN)));
             }
         }
@@ -145,18 +146,18 @@ class BuilderUtils
         } elseif ($requestingRebuild) {
             return 'optional rebuild';
         } else {
-            echo MessageUtils::eol(1);
+            ConsoleOutput::echoNewlines(1);
             die();
         }
     }
 
     private static function buildMessage(string $decision)
     {
-        echo MessageUtils::eol(1);
+        ConsoleOutput::echoNewlines(1);
 
         switch ($decision) {
             case "necessary rebuild":
-                echo MessageUtils::NECESSARY_REBUILD_MSG;
+                ConsoleOutput::printMessage('necessary_rebuild_msg');
                 break;
         }
 

@@ -26,7 +26,7 @@ class TableSorter
         $sortedTables = [];
         $visited = [];
 
-        foreach ($tablesDependencies as $tableName => $dependencies) {
+        foreach ($tablesDependencies as $tableName => $_dependencies) {
             if (!isset($visited[$tableName])) {
                 self::depthFirstSearch($tableName, $tablesDependencies, $visited, $sortedTables);
             }

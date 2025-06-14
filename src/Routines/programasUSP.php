@@ -2,15 +2,11 @@
 
 require_once __DIR__ . "/../../vendor/autoload.php";
 
-use Src\Jobs\Runner\Runner;
+use Src\Routines\Runner\Runner;
 
 pcntl_alarm(25 * 60); // Kills job if it's taking too long.
 
-$tempTables = [
-    'create_matriculasCCEX_temp',
-    'create_inscricoesCCEX_temp',
-];
-
-$tableGroups = ['CEUTables'];
+$tempTables = [];
+$tableGroups = ['ProgramasUSPTables'];
 
 Runner::runJob($tempTables, $tableGroups);

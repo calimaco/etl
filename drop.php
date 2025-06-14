@@ -3,11 +3,12 @@
 require_once __DIR__ . "/vendor/autoload.php";
 
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Src\Utils\CommonUtils;
-use Src\Utils\MessageUtils;
+use Src\Utils\ConsoleOutput;
+use Src\Utils\Stopwatch;
 
-echo MessageUtils::WIPING_DB;
+$runTimer = new Stopwatch(basename(__FILE__));
 
-CommonUtils::timer(function () {
-    Capsule::schema()->dropAllTables();
-}, basename(__FILE__));
+ConsoleOutput::printMessage('wiping_db');
+Capsule::schema()->dropAllTables();
+
+$runTimer->stop();

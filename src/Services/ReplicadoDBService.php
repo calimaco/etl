@@ -1,12 +1,12 @@
 <?php
 
-namespace Src\Extraction;
+namespace Src\Services;
 
 use PDO;
-use Src\Utils\MessageUtils;
+use Src\Utils\ConsoleOutput;
 use Src\Utils\TransformationUtils;
 
-class ReplicadoDB
+class ReplicadoDBService
 {
     private static $instance;
 
@@ -40,7 +40,6 @@ class ReplicadoDB
     public static function fetchData(string $query, array $param = [])
     {
         $db = self::getInstance();
-
         $stmt = $db->prepare($query);
 
         try {
@@ -78,12 +77,12 @@ class ReplicadoDB
             $wasTimedOut = strpos($e->getMessage(), "Changed database context");
 
             if ($wasTimedOut !== false) {
-                echo MessageUtils::DB_CONNECTION_TIMEOUT;
+                ConsoleOutput::printMessage('db_connection_timeout');
             } else {
-                MessageUtils::exceptionCaught($e, 3);
+                ConsoleOutput::printException($e);
             }
 
-            echo MessageUtils::EXITING_SCRIPT;
+            ConsoleOutput::printMessage('exiting_script');
             die();
         }
     }
