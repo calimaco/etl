@@ -13,7 +13,7 @@ return [
     "questionario_respostas" => [
         "query_path" => "QuestSocioEcon/questionario_respostas",
         "model" => QuestionarioResposta::class,
-        "load_type" => "full",
+        "load_type" => "paginated",
         "map" => "QuestSocioEcon/questionario_resposta_map"
     ],
 ];

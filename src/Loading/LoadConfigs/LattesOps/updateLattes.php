@@ -1,5 +1,5 @@
 <?php
-/*
+
 namespace Src\Loading\Operations\LattesOps;
 
 use Src\Transformation\Transformer;
@@ -56,4 +56,3 @@ class updateLattes
         )[0]->data;
     }
 }
-*/

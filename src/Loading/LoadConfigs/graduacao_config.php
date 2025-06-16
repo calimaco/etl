@@ -90,7 +90,7 @@ return [
     "turmas_graduacao" => [
         "query_path" => "Graduacao/turmas_graduacao",
         "model" => TurmaGraduacao::class,
-        "load_type" => "full",
+        "load_type" => "paginated",
         "map" => "Graduacao/turma_graduacao_map"
     ],
 ];
