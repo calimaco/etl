@@ -5,33 +5,34 @@ namespace Src\Utils;
 require_once __DIR__ . "/../../vendor/autoload.php";
 
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Src\Loading\DbHandle\DatabaseManager;
 use Src\Utils\TableSorter;
 
 class BuilderUtils
 {
-    public static function getAllTableGroups()
+    public static function getAllTableCollectionNames()
     {
         return [
-            'PessoasTables',
-            'GraduacaoTables',
-            'PosGraduacaoTables',
-            'PesquisasAvancadasTables',
-            'CEUTables',
-            'ServidoresTables',
-            'ProgramasUSPTables',
-            'QuestSocioEconTables',
-            'LattesTables',
+            'Pessoa',
+            'Graduacao',
+            'PosGraduacao',
+            'PesquisaAvancada',
+            'CEU',
+            'Servidor',
+            'ProgramaUSP',
+            'QuestSocioEcon',
+            'Lattes',
         ];
     }
 
-    public static function getTablesNamesFromTableGroups(
-        array $group,
+    public static function getTablesNamesFromTableCollections(
+        string|array $collectionNames,
         bool $sortedByDependencies = false
     ) {
+        if (is_string($collectionNames)) $collectionNames = [$collectionNames];
+
         $tablesNames = [];
 
-        $tablesProperties = self::getTablesInfoFromTableGroups($group, $sortedByDependencies);
+        $tablesProperties = self::getTablesInfoFromTableCollections($collectionNames, $sortedByDependencies);
 
         foreach ($tablesProperties as $tableProperties) {
             $tablesNames[] = $tableProperties['tableName'];
@@ -40,20 +41,18 @@ class BuilderUtils
         return $tablesNames;
     }
 
-    public static function getTableGroupPath(string $groupName)
-    {
-        return __DIR__ . "/../Loading/SchemaBuilder/Tables/" . $groupName;
-    }
-
-    public static function getTablesInfoFromTableGroups(
-        array $groups,
+    public static function getTablesInfoFromTableCollections(
+        string|array $collectionNames,
         bool $sortedByDependencies = false
     ) {
+        if (is_string($collectionNames)) $collectionNames = [$collectionNames];
+
         $tablesInfo = [];
 
-        foreach ($groups as $group) {
-            $groupPath = self::getTableGroupPath($group);
-            $files = glob("$groupPath/*.php");
+        foreach ($collectionNames as $collectionName) {
+            $collectionPath = self::getTableCollectionPath($collectionName);
+            $files = glob("$collectionPath/*.php");
+
             foreach ($files as $file) {
                 $content = include $file;
                 $tablesInfo[] = $content;
@@ -67,117 +66,44 @@ class BuilderUtils
         return $tablesInfo;
     }
 
+    private static function getTableCollectionPath(string $collectionName)
+    {
+        return __DIR__ . "/../Loading/Schemas/" . $collectionName;
+    }
+
     public static function getAllETLTablesInfo(bool $sortedByDependencies = false)
     {
-        $allGroups = self::getAllTableGroups();
-        return self::getTablesInfoFromTableGroups($allGroups, $sortedByDependencies);
+        $allCollectionNames = self::getAllTableCollectionNames();
+        return self::getTablesInfoFromTableCollections($allCollectionNames, $sortedByDependencies);
     }
 
-    public static function validateCurrentDatabaseStructure(bool $isTryingToLoad)
+    public static function hasExpectedSchema()
     {
         $expectedUserTablesColumns = self::getExpectedTablesColumns();
-        $actualUserTables = Capsule::schema()->getTables();
-        $missingColumnFound = false;
 
         foreach ($expectedUserTablesColumns as $table => $columns) {
-            if (!Capsule::schema()->hasColumns($table, $columns)) {
-                $missingColumnFound = true;
-            };
-        }
-
-        if ($isTryingToLoad) {
-            if (empty($actualUserTables)) {
-                die(ConsoleOutput::printMessage('error_empty_db'));
-            } elseif ($missingColumnFound) {
-                die(ConsoleOutput::printMessage('error_table_issue'));
-            } else {
-                return;
+            foreach ($columns as $column) {
+                if (!Capsule::schema()->hasColumn($table, $column)) {
+                    return false;
+                }
             }
         }
 
-        return $missingColumnFound;
+        return true;
     }
 
-    public static function setupDatabase(bool $forceRebuild)
+    public static function validateCurrentDatabaseStructure()
     {
-        $requestingRebuild = false;
-        $missingColumnFound = self::validateCurrentDatabaseStructure(false);
+        $userHasTables = count(Capsule::select("SHOW TABLES")) > 0;
 
-        if ($forceRebuild === true) {
-            $requestingRebuild = true;
-        } elseif ($missingColumnFound === false) {
-            $requestingRebuild = self::offerRebuild();
+        if (!$userHasTables) {
+            die(ConsoleOutput::printMessage('error_empty_db'));
         }
 
-        $decision = self::buildDecision(
-            $missingColumnFound,
-            $requestingRebuild
-        );
+        $hasExpectedSchema = self::hasExpectedSchema();
 
-        self::buildMessage($decision);
-        return self::buildAction($decision);
-    }
-
-    private static function offerRebuild()
-    {
-        ConsoleOutput::printMessage('offer_rebuild_msg');
-
-        $response = strtoupper(trim(fgets(STDIN)));
-
-        while (true) {
-            if ($response === 'Y') {
-                return true;
-            } elseif ($response === 'N') {
-                ConsoleOutput::printMessage('exiting_script');
-                return false;
-            } else {
-                ConsoleOutput::printMessage('either_yes_no');
-                $response = strtoupper(trim(fgets(STDIN)));
-            }
-        }
-    }
-
-    private static function buildDecision(bool $missingColumnFound, bool $requestingRebuild)
-    {
-        if (empty(Capsule::schema()->getTables())) {
-            return 'first build';
-        } elseif ($missingColumnFound) {
-            return 'necessary rebuild';
-        } elseif ($requestingRebuild) {
-            return 'optional rebuild';
-        } else {
-            ConsoleOutput::echoNewlines(1);
-            die();
-        }
-    }
-
-    private static function buildMessage(string $decision)
-    {
-        ConsoleOutput::echoNewlines(1);
-
-        switch ($decision) {
-            case "necessary rebuild":
-                ConsoleOutput::printMessage('necessary_rebuild_msg');
-                break;
-        }
-
-        return;
-    }
-
-    private static function buildAction(string $decision)
-    {
-        $tableGroups = self::getAllTableGroups();
-        $dbManager = new DatabaseManager();
-
-        if ($decision === 'first build') {
-            $dbManager->buildDB($tableGroups);
-            return true;
-        }
-        if (strpos($decision, 'rebuild')) {
-            $dbManager->rebuildDB($tableGroups);
-            return true;
-        } else {
-            return false;
+        if (!$hasExpectedSchema) {
+            die(ConsoleOutput::printMessage('error_table_issue'));
         }
     }
 

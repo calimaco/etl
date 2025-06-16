@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'error_empty_db' => "\n" .
+    'error_empty_db' => "" .
         "[ERROR] It seems your database is empty.\n" .
         "Please make sure to use the `builder.php` script first." .
         str_repeat(PHP_EOL, 2),

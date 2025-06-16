@@ -4,25 +4,25 @@ namespace Src\Transformation;
 
 class Mapper
 {
-    protected array $fieldMap;
+    protected array $fieldTransformMap;
 
-    public function __construct(array $fieldMap)
+    public function __construct(array $fieldTransformMap)
     {
-        $this->fieldMap = $fieldMap;
+        $this->fieldTransformMap = $fieldTransformMap;
     }
 
     public function mapping(array $record): array
     {
-        $mapped = [];
+        $mappedRecord = [];
 
-        foreach ($this->fieldMap as $targetField => $sourceSpec) {
-            if (is_callable($sourceSpec)) {
-                $mapped[$targetField] = $sourceSpec($record);
-            } elseif (is_string($sourceSpec)) {
-                $mapped[$targetField] = $record[$sourceSpec] ?? null;
+        foreach ($this->fieldTransformMap as $mappedField => $sourceMapping) {
+            if (is_callable($sourceMapping)) {
+                $mappedRecord[$mappedField] = $sourceMapping($record);
+            } elseif (is_string($sourceMapping)) {
+                $mappedRecord[$mappedField] = $record[$sourceMapping] ?? null;
             }
         }
 
-        return $mapped;
+        return $mappedRecord;
     }
 }

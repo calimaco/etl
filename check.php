@@ -10,15 +10,15 @@ use function Src\Utils\getTimeDiffFormatted;
 
 $db = getenv('DB_DATABASE');
 
-$groupLeadTable = [
-    ### group => tableName
-    'pessoas' => 'pessoas',
+$collectionLeadTable = [
+    ### collection => tableName
+    'pessoa' => 'pessoas',
     'graduacao' => 'graduacoes',
     'posGraduacao' => 'posgraduacoes',
-    'pesquisasAvancadas' => 'pesquisas_avancadas',
-    'servidores' => 'vinculos_servidores',
+    'pesquisaAvancada' => 'pesquisas_avancadas',
+    'servidor' => 'vinculos_servidores',
     'ceu' => 'cursos_culturaextensao',
-    'programasUSP' => 'auxilios_concedidos',
+    'programaUSP' => 'auxilios_concedidos',
     'questSocioEcon' => 'questionario_respostas',
     'lattes' => 'lattes'
 ];
@@ -29,19 +29,19 @@ $query = Capsule::table('mysql.innodb_table_stats')
         ,CONVERT_TZ(last_update, @@session.time_zone, '+00:00') as last_update_utc"
     )
     ->where('database_name', $db)
-    ->whereIn('table_name', array_values($groupLeadTable))
+    ->whereIn('table_name', array_values($collectionLeadTable))
     ->where('n_rows', '>', 0)
     ->get();
 
 $lastUpdates = [];
-foreach ($groupLeadTable as $group => $tableName) {
+foreach ($collectionLeadTable as $collection => $tableName) {
     $r = $query->firstWhere('table_name', $tableName);
 
     $timeDiff = $r?->last_update_utc !== null
         ? getTimeDiffFormatted($r?->last_update_utc)
         : null;
 
-    $lastUpdates[$group] = $timeDiff;
+    $lastUpdates[$collection] = $timeDiff;
 }
 
 ConsoleOutput::echoNewlines(1);
