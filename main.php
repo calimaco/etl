@@ -13,13 +13,13 @@ $runTimer = new Stopwatch(basename(__FILE__));
 
 $routines = [
     // 'pessoa',
-    'graduacao',
-    'posGraduacao',
-    // 'pesquisaAvancada',
-    // 'servidor',
+    // 'graduacao',
+    // 'pos_graduacao',
+    // 'pesquisa_avancada',
+    'servidor',
     // 'ceu',
-    // 'programaUSP',
-    'questSocioEcon',
+    // 'programa_usp',
+    // 'quest_socio_econ',
     // 'lattes',
 ];
 
@@ -31,11 +31,9 @@ if (in_array("-f", $argv)) {
 // make sure we're good to go
 BuilderUtils::validateCurrentDatabaseStructure(true);
 
-$routineMaps = require 'src/routine_maps.php';
-
 foreach ($routines as $routine) {
-    $routineMap = $routineMaps[$routine];
-    RoutineService::runRoutine($routineMap);
+    $blueprint = require "src/Blueprints/{$routine}.php";
+    RoutineService::runRoutine($blueprint);
 
     // for cli readability
     echo str_repeat('_', 50);

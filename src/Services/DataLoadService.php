@@ -5,19 +5,14 @@ namespace Src\Services;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Src\Utils\BuilderUtils;
 use Src\Utils\ConsoleOutput;
-use Src\Utils\LoadingUtils;
 use Src\Utils\Stopwatch;
 
 class DataLoadService
 {
     public function updateTables(array $setTables, string $loadConfigFileName)
     {
-        $setLoadConfig = require "src/Loading/LoadConfigs/{$loadConfigFileName}.php";
-
         $task = function ($table) use ($setLoadConfig) {
             $tableLoadConfig = $setLoadConfig[$table];
-            $object = new TransformerService($tableLoadConfig['map'], $tableLoadConfig['query_path']);
-            LoadingUtils::insertIntoTable($tableLoadConfig['load_type'], $object, $tableLoadConfig['model']);
         };
 
         ProgressTaskRunner::run($task, $setTables);
@@ -35,13 +30,13 @@ class DataLoadService
     }
 
 
-    public function loadOrReloadTables(array $routineMap)
+    public function loadOrReloadTables(string $routineName, array $routineLoadingConfig)
     {
         try {
-            Capsule::transaction(function () use ($routineMap) {
+            Capsule::transaction(function () use ($routineName, $routineLoadingConfig) {
 
-                ['schemaCollection' => $collection, 'loadConfig' => $loadConfigFileName] = $routineMap;
-                $tables = BuilderUtils::getTablesNamesFromTableCollections($collection, true);
+                $tables = BuilderUtils::getTableNamesFromDomains($routineName, true);
+                // get tables here with routine schema path
 
                 $runTimer1 = new Stopwatch();
                 echo "Wiping tables (if necessary):";
@@ -51,7 +46,7 @@ class DataLoadService
 
                 $runTimer2 = new Stopwatch();
                 echo "Fetching data and writing new records:";
-                $this->updateTables($tables, $loadConfigFileName);
+                $this->updateTables($tables, $routineLoadingConfig);
                 $runTimer2->stop();
                 ConsoleOutput::echoNewlines(2);
             });

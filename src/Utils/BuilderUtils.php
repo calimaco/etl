@@ -9,7 +9,7 @@ use Src\Utils\TableSorter;
 
 class BuilderUtils
 {
-    public static function getAllTableCollectionNames()
+    public static function getAllRoutineNames()
     {
         return [
             'Pessoa',
@@ -24,15 +24,15 @@ class BuilderUtils
         ];
     }
 
-    public static function getTablesNamesFromTableCollections(
-        string|array $collectionNames,
+    public static function getRoutineTables(
+        string|array $routines,
         bool $sortedByDependencies = false
     ) {
-        if (is_string($collectionNames)) $collectionNames = [$collectionNames];
+        if (is_string($routines)) $routines = [$routines];
 
         $tablesNames = [];
 
-        $tablesProperties = self::getTablesInfoFromTableCollections($collectionNames, $sortedByDependencies);
+        $tablesProperties = self::getTablesInfoFromTableCollections($routines, $sortedByDependencies);
 
         foreach ($tablesProperties as $tableProperties) {
             $tablesNames[] = $tableProperties['tableName'];
@@ -41,17 +41,17 @@ class BuilderUtils
         return $tablesNames;
     }
 
-    public static function getTablesInfoFromTableCollections(
-        string|array $collectionNames,
+    public static function getRoutineTablesMetadata(
+        string|array $routines,
         bool $sortedByDependencies = false
     ) {
-        if (is_string($collectionNames)) $collectionNames = [$collectionNames];
+        if (is_string($routines)) $routines = [$routines];
 
         $tablesInfo = [];
 
-        foreach ($collectionNames as $collectionName) {
-            $collectionPath = self::getTableCollectionPath($collectionName);
-            $files = glob("$collectionPath/*.php");
+        foreach ($routines as $routine) {
+            $routineSchemaPath = self::getRoutineSchemaPath($routine);
+            $files = glob("$routineSchemaPath/*.php");
 
             foreach ($files as $file) {
                 $content = include $file;
@@ -66,9 +66,9 @@ class BuilderUtils
         return $tablesInfo;
     }
 
-    private static function getTableCollectionPath(string $collectionName)
+    private static function getRoutineSchemaPath(string $routine)
     {
-        return __DIR__ . "/../Loading/Schemas/" . $collectionName;
+        $blueprint = require "src/Blueprints/{$routine}.php";
     }
 
     public static function getAllETLTablesInfo(bool $sortedByDependencies = false)
@@ -77,19 +77,10 @@ class BuilderUtils
         return self::getTablesInfoFromTableCollections($allCollectionNames, $sortedByDependencies);
     }
 
-    public static function hasExpectedSchema()
+    public static function getAllTablesInfo(bool $sortedByDependencies = false)
     {
-        $expectedUserTablesColumns = self::getExpectedTablesColumns();
-
-        foreach ($expectedUserTablesColumns as $table => $columns) {
-            foreach ($columns as $column) {
-                if (!Capsule::schema()->hasColumn($table, $column)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        $allDomainNames = self::getAllRoutineNames();
+        return self::getTablesInfoFromDomains($allDomainNames, $sortedByDependencies);
     }
 
     public static function validateCurrentDatabaseStructure()
@@ -107,10 +98,25 @@ class BuilderUtils
         }
     }
 
+    public static function hasExpectedSchema()
+    {
+        $expectedUserTablesColumns = self::getExpectedTablesColumns();
+
+        foreach ($expectedUserTablesColumns as $table => $columns) {
+            foreach ($columns as $column) {
+                if (!Capsule::schema()->hasColumn($table, $column)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     private static function getExpectedTablesColumns()
     {
         $expectedUserTablesColumns = [];
-        $allTablesInfo = self::getAllETLTablesInfo();
+        $allTablesInfo = self::getAllTablesInfo();
 
         foreach ($allTablesInfo as $tableInfo) {
             $tableName = $tableInfo["tableName"];

@@ -6,18 +6,24 @@ use Src\Utils\Stopwatch;
 
 class RoutineService
 {
-    public static function runRoutine(array $routineMap)
+    public static function runRoutine(array $blueprint)
     {
-        $runTimer = new Stopwatch($routineMap['schemaCollection']);
+        [
+            'name' => $routineName,
+            'temp_tables' => $routineTempTables,
+            'loading_config' => $routineLoadingConfig
+        ]
+            = $blueprint;
 
-        echo "\n({$routineMap['schemaCollection']})\n";
+        $runTimer = new Stopwatch($routineName);
+        echo "\n({$routineName})\n";
 
         // Generate necessary temp tables
-        TempTableService::generateTempTables($routineMap['tempTables']);
+        TempTableService::generateTempTables($routineTempTables);
 
         // Wipe old records and write new ones
         $dataUpdateService = new DataLoadService();
-        $dataUpdateService->loadOrReloadTables($routineMap);
+        $dataUpdateService->loadOrReloadTables($routineName, $routineLoadingConfig);
 
         $runTimer->stop();
     }
